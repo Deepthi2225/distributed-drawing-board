@@ -108,21 +108,29 @@ Screenshot files:
 - Gateway reported active clients: 5
 - Leader present during run: replica3
 
+![Case 1 Screenshot](screenshots/case1.png)
+
 ### Case 2 - Killing leader
 
 - Leader container stop action succeeded (`docker stop replica3`)
 - Cluster continued and elected/served through a new leader path
+
+![Case 2 Screenshot](screenshots/case2.png)
 
 ### Case 3 - Automatic failover
 
 - Gateway status remained healthy after failover
 - Replica statuses showed stable leader/follower roles after election
 
+![Case 3 Screenshot](screenshots/case3.png)
+
 ### Case 4 - Hot-reload replica after file edit
 
 - Replica log showed file-watch trigger and reload sequence:
   - "WatchFiles detected changes in 'replica/main.py'. Reloading..."
   - "Shutting down" -> "Started server process" -> "Application startup complete"
+
+![Case 4 Screenshot](screenshots/case4.png)
 
 ### Case 5 - Consistent state after restart
 
@@ -131,11 +139,15 @@ Screenshot files:
   - `log_length: 8`
   - `commit_index: 7`
 
+![Case 5 Screenshot](screenshots/case5.png)
+
 ### Case 6 - Chaotic/stress behavior
 
 - Rapid stop/start operations completed
 - Final cluster status recovered to healthy
 - Final replicas remained consistent (`log_length: 8`, `commit_index: 7`)
+
+![Case 6 Screenshot](screenshots/case6.png)
 
 ## API/Protocol Notes
 
