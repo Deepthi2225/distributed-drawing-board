@@ -1,0 +1,95 @@
+version: "3.9"
+
+# ═══════════════════════════════════════════════════
+#  Distributed Drawing Board — docker-compose
+#  Services: gateway + 3 RAFT replicas
+# ═══════════════════════════════════════════════════
+
+networks:
+  raft-net:
+    driver: bridge
+
+services:
+
+  # ─── Gateway ────────────────────────────────────
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    container_name: gateway
+    ports:
+      - "8000:8000"       # WebSocket + REST for browsers
+    volumes:
+      - ./gateway:/app/gateway      # hot-reload source
+      - ./frontend:/app/frontend    # serve static files
+    environment:
+      - REPLICA1_URL=http://replica1:8001
+      - REPLICA2_URL=http://replica2:8002
+      - REPLICA3_URL=http://replica3:8003
+    networks:
+      - raft-net
+    depends_on:
+      - replica1
+      - replica2
+      - replica3
+    restart: unless-stopped
+
+  # ─── Replica 1 ──────────────────────────────────
+  replica1:
+    build:
+      context: .
+      dockerfile: Dockerfile.replica
+    container_name: replica1
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./replica1:/app/replica     # bind mount for hot-reload
+    environment:
+      - REPLICA_ID=replica1
+      - PORT=8001
+      - GATEWAY_URL=http://gateway:8000
+      - PEER_REPLICA2=http://replica2:8002
+      - PEER_REPLICA3=http://replica3:8003
+    networks:
+      - raft-net
+    restart: unless-stopped
+
+  # ─── Replica 2 ──────────────────────────────────
+  replica2:
+    build:
+      context: .
+      dockerfile: Dockerfile.replica
+    container_name: replica2
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./replica2:/app/replica
+    environment:
+      - REPLICA_ID=replica2
+      - PORT=8002
+      - GATEWAY_URL=http://gateway:8000
+      - PEER_REPLICA1=http://replica1:8001
+      - PEER_REPLICA3=http://replica3:8003
+    networks:
+      - raft-net
+    restart: unless-stopped
+
+  # ─── Replica 3 ──────────────────────────────────
+  replica3:
+    build:
+      context: .
+      dockerfile: Dockerfile.replica
+    container_name: replica3
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./replica3:/app/replica
+    environment:
+      - REPLICA_ID=replica3
+      - PORT=8003
+      - GATEWAY_URL=http://gateway:8000
+      - PEER_REPLICA1=http://replica1:8001
+      - PEER_REPLICA2=http://replica2:8002
+    networks:
+      - raft-net
+    restart: unless-stopped

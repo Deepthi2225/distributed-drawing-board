@@ -1,0 +1,17 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir watchfiles
+
+# Source is bind-mounted at runtime (./replicaN → /app/replica)
+COPY replica/ ./replica/
+
+# PORT and REPLICA_ID are set via environment in docker-compose
+CMD sh -c "uvicorn replica.main:app \
+           --host 0.0.0.0 \
+           --port ${PORT:-8001} \
+           --reload \
+           --reload-dir /app/replica"

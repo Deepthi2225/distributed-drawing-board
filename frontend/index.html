@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Distributed Drawing Board</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        h2 {
+            margin-bottom: 12px;
+            font-size: 1.6rem;
+            color: #a29bfe;
+            letter-spacing: 1px;
+        }
+
+        #status-bar {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 14px;
+            font-size: 0.85rem;
+            background: #16213e;
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: 1px solid #2d2d5e;
+        }
+
+        .status-item span {
+            font-weight: bold;
+        }
+
+        #conn-status { color: #ff7675; }
+        #conn-status.connected { color: #55efc4; }
+
+        #leader-id { color: #fdcb6e; }
+        #stroke-count { color: #74b9ff; }
+
+        canvas {
+            border: 2px solid #6c5ce7;
+            border-radius: 8px;
+            background: #ffffff;
+            cursor: crosshair;
+            box-shadow: 0 0 30px rgba(108, 92, 231, 0.3);
+        }
+
+        #toolbar {
+            display: flex;
+            gap: 12px;
+            margin-top: 14px;
+            align-items: center;
+        }
+
+        .tool-label {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        input[type="color"] {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            background: none;
+        }
+
+        input[type="range"] {
+            width: 100px;
+        }
+
+        button {
+            padding: 7px 16px;
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        button:hover { background: #a29bfe; }
+
+        #log {
+            margin-top: 14px;
+            width: 820px;
+            max-height: 100px;
+            overflow-y: auto;
+            background: #0f0f1e;
+            border: 1px solid #2d2d5e;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            color: #74b9ff;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+<h2>🎨 Distributed Drawing Board</h2>
+
+<div id="status-bar">
+    <div class="status-item">Connection: <span id="conn-status">Disconnected</span></div>
+    <div class="status-item">Leader: <span id="leader-id">—</span></div>
+    <div class="status-item">Committed Strokes: <span id="stroke-count">0</span></div>
+</div>
+
+<canvas id="board" width="820" height="500"></canvas>
+
+<div id="toolbar">
+    <span class="tool-label">Color:</span>
+    <input type="color" id="colorPicker" value="#000000" />
+    <span class="tool-label">Size:</span>
+    <input type="range" id="brushSize" min="1" max="20" value="3" />
+    <button onclick="clearCanvas()">🗑 Clear</button>
+</div>
+
+<div id="log"></div>
+
+<script src="canvas.js"></script>
+</body>
+</html>

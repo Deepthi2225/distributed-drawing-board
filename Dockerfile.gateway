@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir watchfiles
+
+# Source is bind-mounted at runtime (./gateway → /app/gateway)
+# We copy a stub so the image builds even without volume
+COPY gateway/ ./gateway/
+COPY frontend/ ./frontend/
+
+CMD ["uvicorn", "gateway.main:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8000", \
+     "--reload", \
+     "--reload-dir", "/app/gateway"]
