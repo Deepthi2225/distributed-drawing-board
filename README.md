@@ -94,6 +94,15 @@ docker compose down --volumes --rmi local
 
 Full detailed outputs are captured in `scenario_report_clean.md`.
 
+Screenshot files:
+
+- `screenshots/case1.png`
+- `screenshots/case2.png`
+- `screenshots/case3.png`
+- `screenshots/case4.png`
+- `screenshots/case5.png`
+- `screenshots/case6.png`
+
 ### Case 1 - Multiple tabs/users drawing
 
 - Gateway reported active clients: 5
