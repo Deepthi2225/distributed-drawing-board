@@ -90,6 +90,44 @@ docker compose down --volumes --rmi local
    - `docker start replica2`
 9. Replica should rejoin and catch up.
 
+## Scenario Evidence (Live Run)
+
+Full detailed outputs are captured in `scenario_report_clean.md`.
+
+### Case 1 - Multiple tabs/users drawing
+
+- Gateway reported active clients: 5
+- Leader present during run: replica3
+
+### Case 2 - Killing leader
+
+- Leader container stop action succeeded (`docker stop replica3`)
+- Cluster continued and elected/served through a new leader path
+
+### Case 3 - Automatic failover
+
+- Gateway status remained healthy after failover
+- Replica statuses showed stable leader/follower roles after election
+
+### Case 4 - Hot-reload replica after file edit
+
+- Replica log showed file-watch trigger and reload sequence:
+  - "WatchFiles detected changes in 'replica/main.py'. Reloading..."
+  - "Shutting down" -> "Started server process" -> "Application startup complete"
+
+### Case 5 - Consistent state after restart
+
+- Stroke posts accepted from index 0 through 7
+- After follower restart, all replicas converged to:
+  - `log_length: 8`
+  - `commit_index: 7`
+
+### Case 6 - Chaotic/stress behavior
+
+- Rapid stop/start operations completed
+- Final cluster status recovered to healthy
+- Final replicas remained consistent (`log_length: 8`, `commit_index: 7`)
+
 ## API/Protocol Notes
 
 ### Gateway Endpoints
@@ -126,7 +164,7 @@ docker compose down --volumes --rmi local
   - heartbeat traffic,
   - replica restarts and rejoin behavior.
 
-Note: Live runtime verification in this session could not complete because Docker engine was not running.
+Note: Live runtime verification was initially blocked while Docker engine was down, then completed successfully after Docker was started.
 
 ## Troubleshooting
 
